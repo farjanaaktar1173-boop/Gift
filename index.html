@@ -4,29 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Premium Gift Panel • HOUR FM</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins','Segoe UI',sans-serif; user-select:none; -webkit-tap-highlight-color:transparent; }
-:root {
-    --gold: #F5D76E;
-    --gold-deep: #d4af37;
-    --pink: #ff2a74;
-    --purple: #a855f7;
-    --cyan: #00d2ff;
-}
-html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }
-body { color: #fff; display: flex; flex-direction: column; position: relative; }
+:root { --gold:#F5D76E; --cyan:#00d2ff; }
+html, body { width:100%; height:100%; overflow:hidden; background:transparent; }
+body { color:#fff; display:flex; flex-direction:column; position:relative; }
 
-/* Aurora background */
 body::before {
-    content:'';
-    position: fixed;
-    inset: -20%;
+    content:''; position:fixed; inset:-20%;
     background:
         radial-gradient(circle at 15% 80%, rgba(168,85,247,.3), transparent 45%),
         radial-gradient(circle at 85% 20%, rgba(255,42,116,.25), transparent 45%),
         radial-gradient(circle at 50% 50%, rgba(245,215,110,.08), transparent 60%);
-    z-index: -2;
-    pointer-events: none;
+    z-index:-2; pointer-events:none;
     animation: auroraShift 12s ease-in-out infinite alternate;
 }
 @keyframes auroraShift {
@@ -34,89 +25,48 @@ body::before {
     100% { transform: translate(-4%,-4%) rotate(8deg) scale(1.15); }
 }
 
-/* Twinkling stars */
-body::after {
-    content:'';
-    position: fixed;
-    inset: 0;
-    background-image:
-        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.6), transparent),
-        radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,.4), transparent),
-        radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,.5), transparent),
-        radial-gradient(1px 1px at 40% 90%, rgba(255,255,255,.3), transparent),
-        radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,.4), transparent),
-        radial-gradient(1px 1px at 90% 50%, rgba(255,255,255,.5), transparent);
-    z-index: -1;
-    pointer-events: none;
-    animation: twinkle 4s ease-in-out infinite alternate;
+/* Balance + Target Row */
+.top-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 6px 10px 6px; gap: 8px; flex-shrink: 0;
 }
-@keyframes twinkle { 0% { opacity: .4; } 100% { opacity: 1; } }
-
-/* Balance bar */
-.balance-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 6px 12px 6px;
-    flex-shrink: 0;
-}
-
 .balance-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, rgba(0,210,255,.18), rgba(0,210,255,.08));
-    padding: 8px 16px 8px 10px;
-    border-radius: 24px;
+    display: inline-flex; align-items: center; gap: 7px;
+    background: linear-gradient(135deg, rgba(0,210,255,.18), rgba(0,210,255,.06));
+    padding: 7px 14px 7px 8px; border-radius: 22px;
     border: 1px solid rgba(0,210,255,.4);
-    box-shadow: 0 0 20px rgba(0,210,255,.2);
-    position: relative;
-    overflow: hidden;
-}
-.balance-chip::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
-    transform: translateX(-100%);
-    animation: shimmer 3s ease-in-out infinite;
-}
-@keyframes shimmer {
-    0%, 100% { transform: translateX(-100%); }
-    50% { transform: translateX(100%); }
+    box-shadow: 0 0 16px rgba(0,210,255,.15);
 }
 .diamond-icon {
-    width: 26px; height: 26px;
-    display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, #00d2ff, #0098d4);
-    border-radius: 50%;
-    font-size: 14px;
-    box-shadow: 0 0 12px rgba(0,210,255,.6);
-    position: relative; z-index: 1;
+    width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg,#00d2ff,#0098d4); border-radius: 50%;
+    font-size: 12px; box-shadow: 0 0 8px rgba(0,210,255,.6);
 }
-.balance-chip #diamondCount {
-    font-size: 15px; font-weight: 800;
-    color: #fff; letter-spacing: .5px;
-    position: relative; z-index: 1;
-    text-shadow: 0 0 8px rgba(0,210,255,.6);
+#diamondCount { font-size: 14px; font-weight: 800; color: #fff; }
+.balance-chip small { font-size: 9px; color: #7dd3fc; }
+
+.target-chip {
+    display: none; align-items: center; gap: 6px;
+    background: rgba(245,215,110,.12);
+    padding: 7px 12px; border-radius: 20px;
+    border: 1px solid rgba(245,215,110,.4);
+    font-size: 11px; font-weight: 600; color: var(--gold);
+    max-width: 55%; overflow: hidden;
 }
-.balance-chip small {
-    font-size: 10px; color: #7dd3fc; font-weight: 500;
-    position: relative; z-index: 1;
+.target-chip.visible { display: inline-flex; }
+.target-chip i { font-size: 10px; }
+.target-chip span {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    max-width: 100px;
 }
 
 /* Gift grid */
 .gift-grid {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
+    flex: 1; overflow-y: auto; overflow-x: hidden;
     padding: 4px 2px 8px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    align-content: start;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(245,215,110,.4) transparent;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; align-content: start;
+    scrollbar-width: thin; scrollbar-color: rgba(245,215,110,.4) transparent;
 }
 .gift-grid::-webkit-scrollbar { width: 3px; }
 .gift-grid::-webkit-scrollbar-thumb { background: rgba(245,215,110,.4); border-radius: 4px; }
@@ -124,45 +74,26 @@ body::after {
 .gift-card {
     aspect-ratio: 1 / 1.15;
     background: linear-gradient(145deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-    border-radius: 16px;
-    padding: 8px 4px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    border-radius: 16px; padding: 8px 4px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
     border: 1.5px solid rgba(255,255,255,.08);
     cursor: pointer;
     transition: all .25s cubic-bezier(.2,.9,.3,1.2);
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(4px);
-}
-.gift-card::before {
-    content:'';
-    position: absolute; inset: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(245,215,110,.15), transparent 60%);
-    opacity: 0;
-    transition: opacity .3s;
-    pointer-events: none;
+    position: relative; overflow: hidden;
 }
 .gift-card:active { transform: scale(.94); }
 .gift-card.selected {
     border-color: var(--gold);
     background: linear-gradient(145deg, rgba(245,215,110,.15), rgba(212,175,55,.08));
-    box-shadow: 0 0 0 1px rgba(245,215,110,.4) inset, 0 0 24px rgba(245,215,110,.5), 0 4px 20px rgba(0,0,0,.4);
+    box-shadow: 0 0 0 1px rgba(245,215,110,.4) inset, 0 0 24px rgba(245,215,110,.5);
     transform: translateY(-3px) scale(1.02);
 }
-.gift-card.selected::before { opacity: 1; }
-
 .gift-img-wrap {
-    width: 56px; height: 56px;
-    border-radius: 50%;
+    width: 56px; height: 56px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.15), rgba(0,0,0,.2));
-    margin-bottom: 6px;
-    border: 1.5px solid rgba(255,255,255,.1);
-    overflow: hidden;
-    flex-shrink: 0;
+    margin-bottom: 6px; border: 1.5px solid rgba(255,255,255,.1);
+    overflow: hidden; flex-shrink: 0;
     transition: all .25s;
 }
 .gift-card.selected .gift-img-wrap {
@@ -170,18 +101,12 @@ body::after {
     box-shadow: 0 0 16px rgba(245,215,110,.6);
     transform: scale(1.08);
 }
-.gift-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-.gift-img-wrap .emoji-fallback {
-    font-size: 30px;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,.5));
-}
+.gift-img-wrap img { width:100%; height:100%; object-fit: cover; }
+.gift-img-wrap .emoji-fallback { font-size: 30px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
 .gift-name {
-    font-size: 10px; color: #ccc; font-weight: 500;
-    margin-bottom: 3px;
-    text-align: center;
-    max-width: 100%;
+    font-size: 10px; color: #ccc; font-weight: 500; margin-bottom: 3px;
+    text-align: center; max-width: 100%; padding: 0 2px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    padding: 0 2px;
 }
 .gift-price {
     display: inline-flex; align-items: center; gap: 3px;
@@ -191,40 +116,26 @@ body::after {
 .gift-price::before { content: '💎'; font-size: 9px; }
 
 /* Footer */
-.footer {
-    padding: 12px 6px 6px;
-    border-top: 1px solid rgba(255,255,255,.07);
-    display: flex; flex-direction: column; gap: 10px;
-    flex-shrink: 0;
-}
+.footer { padding: 10px 6px 4px; border-top: 1px solid rgba(255,255,255,.07); flex-shrink: 0; }
 .selected-info {
-    text-align: center;
-    font-size: 11px; color: #9c8fb0; font-weight: 500;
-    min-height: 16px;
-    transition: color .2s;
+    text-align: center; font-size: 11px; color: #9c8fb0; font-weight: 500;
+    min-height: 16px; margin-bottom: 8px; transition: color .2s;
 }
 .selected-info.has-selection { color: var(--gold); font-weight: 600; }
 
 .send-btn {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 16px;
+    width: 100%; padding: 14px;
+    border: none; border-radius: 16px;
     background: linear-gradient(135deg, #6366f1, #a855f7, #ff2a74);
     background-size: 200% 200%;
-    color: #fff;
-    font-size: 15px; font-weight: 700; letter-spacing: .5px;
-    cursor: pointer;
-    transition: all .3s;
-    position: relative;
-    overflow: hidden;
+    color: #fff; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all .3s;
+    position: relative; overflow: hidden;
     box-shadow: 0 4px 20px rgba(168,85,247,.4);
     font-family: inherit;
 }
 .send-btn:disabled {
-    opacity: .35;
-    cursor: not-allowed;
-    box-shadow: none;
+    opacity: .35; cursor: not-allowed; box-shadow: none;
     background: rgba(255,255,255,.08);
 }
 .send-btn:not(:disabled) { animation: gradientMove 3s ease infinite; }
@@ -233,26 +144,20 @@ body::after {
     50% { background-position: 100% 50%; }
 }
 .send-btn:not(:disabled):active { transform: scale(.97); }
-.send-btn::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
-    transform: translateX(-100%);
-}
-.send-btn:not(:disabled)::before { animation: sendShimmer 2.5s ease-in-out infinite; }
-@keyframes sendShimmer {
-    0%, 100% { transform: translateX(-100%); }
-    50% { transform: translateX(100%); }
-}
 </style>
 </head>
 <body>
 
-    <div class="balance-bar">
+    <div class="top-row">
         <div class="balance-chip">
             <div class="diamond-icon">💎</div>
             <span id="diamondCount">1000</span>
             <small>ডায়মন্ড</small>
+        </div>
+        <div class="target-chip" id="targetChip">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>To:</span>
+            <strong id="targetName">—</strong>
         </div>
     </div>
 
@@ -264,13 +169,16 @@ body::after {
     </div>
 
 <script>
-/* ============ GIFTS DATA — এখানে নতুন গিফট যোগ করুন ============ */
+/* ============ URL PARAMS ============ */
+const params = new URLSearchParams(location.search);
+const targetUid  = params.get('targetUid') || '';
+const targetName = params.get('targetName') || '';
+let currentDiamonds = parseInt(params.get('balance')) || 1000;
+
+/* ============ GIFTS DATA ============ */
 const GIFTS = [
     {
-        id: 'box',
-        name: 'Gift Box',
-        price: 100,
-        emoji: '🎁',
+        id: 'box', name: 'Gift Box', price: 100, emoji: '🎁',
         image: 'https://raw.githubusercontent.com/farjanaaktar1173-boop/Gift/1ec9b0e3ccf773b2467a804456f096385a2798d1/1791000761663.jpg',
         video: 'https://raw.githubusercontent.com/farjanaaktar1173-boop/Gift/main/VID_%E0%A7%A8%E0%A7%A6%E0%A7%A8%E0%A7%AC%E0%A7%A7%E0%A7%A6%E0%A7%A6%E0%A7%A9_%E0%A7%A6%E0%A7%AD%E0%A7%AB%E0%A7%AB%E0%A7%AB%E0%A7%AB.mp4'
     },
@@ -282,13 +190,19 @@ const GIFTS = [
 ];
 
 /* ============ STATE ============ */
-let currentDiamonds = 1000;
 let selectedGift = null;
-
 const $giftGrid = document.getElementById('giftGrid');
 const $diamondCount = document.getElementById('diamondCount');
 const $sendBtn = document.getElementById('sendBtn');
 const $selectedInfo = document.getElementById('selectedInfo');
+const $targetChip = document.getElementById('targetChip');
+
+/* ============ INIT ============ */
+$diamondCount.textContent = currentDiamonds;
+if (targetName) {
+    document.getElementById('targetName').textContent = targetName;
+    $targetChip.classList.add('visible');
+}
 
 /* ============ RENDER ============ */
 function renderGifts() {
@@ -301,8 +215,7 @@ function renderGifts() {
                 <div class="gift-img-wrap">${imgHTML}</div>
                 <div class="gift-name">${g.name}</div>
                 <div class="gift-price">${g.price}</div>
-            </div>
-        `;
+            </div>`;
     }).join('');
 }
 
@@ -329,7 +242,7 @@ window.sendGift = function() {
         setTimeout(() => {
             $selectedInfo.style.color = '';
             $selectedInfo.textContent = `নির্বাচিত: ${selectedGift.name} — 💎 ${selectedGift.price}`;
-        }, 2000);
+        }, 1800);
         return;
     }
 
@@ -344,45 +257,24 @@ window.sendGift = function() {
         emoji: selectedGift.emoji,
         image: selectedGift.image,
         video: selectedGift.video,
+        targetUid: targetUid,
+        targetName: targetName,
+        newBalance: currentDiamonds,
         ts: Date.now()
     };
 
-    // Parent (Voice Club)-এ পাঠাই
     if (window.parent && window.parent !== window) {
-        try {
-            window.parent.postMessage(payload, '*');
-        } catch (e) {
-            console.warn('postMessage failed:', e);
-        }
-    } else {
-        // Standalone preview
-        if (payload.video) playPreview(payload.video);
+        try { window.parent.postMessage(payload, '*'); } catch(e) { console.warn(e); }
     }
 
-    // Reset
     document.querySelectorAll('.gift-card').forEach(c => c.classList.remove('selected'));
-    $selectedInfo.textContent = 'কোনো গিফট নির্বাচন করুন';
+    $selectedInfo.textContent = '✅ পাঠানো হয়েছে!';
     $selectedInfo.classList.remove('has-selection');
     $sendBtn.disabled = true;
     selectedGift = null;
     if (navigator.vibrate) navigator.vibrate(30);
 };
 
-/* ============ STANDALONE PREVIEW (iframe-এ না থাকলে) ============ */
-function playPreview(url) {
-    const ov = document.createElement('div');
-    ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;';
-    const v = document.createElement('video');
-    v.src = url; v.autoplay = true; v.playsInline = true;
-    v.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;';
-    ov.appendChild(v);
-    document.body.appendChild(ov);
-    const cleanup = () => { ov.style.transition='opacity .3s'; ov.style.opacity='0'; setTimeout(()=>ov.remove(),300); };
-    v.onended = cleanup;
-    ov.onclick = cleanup;
-}
-
-/* ============ INIT ============ */
 renderGifts();
 </script>
 </body>
