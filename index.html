@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gift Panel - Scrollable</title>
+    <style>
+        :root {
+            --primary-bg: #121218;
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --accent-color: #ff2a74;
+            --accent-gradient: linear-gradient(135deg, #ff2a74, #ff7e5f);
+            --diamond-color: #00d2ff;
+            --text-color: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: transparent;
+            color: var(--text-color);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Bottom Sheet Popup - Height increased to 55vh */
+        .popup-container {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100vw;
+            height: 55vh;
+            background: rgba(22, 22, 30, 0.95);
+            backdrop-filter: blur(16px);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+        }
+
+        .popup-container.active {
+            bottom: 0;
+        }
+
+        /* Header */
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+
+        .diamond-balance {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 210, 255, 0.12);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            font-weight: bold;
+            color: var(--diamond-color);
+            font-size: 14px;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Scrollable Gift Grid Container */
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 12px;
+            padding: 16px 0;
+            flex-grow: 1;
+            overflow-y: auto; /* Enable vertical scrolling */
+            align-content: start;
+        }
+
+        /* Scrollbar style */
+        .gift-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+        .gift-grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        /* Square Card with Circle inside */
+        .gift-card {
+            width: 100%;
+            height: 115px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .gift-card.selected {
+            border-color: var(--accent-color);
+            background: rgba(255, 42, 116, 0.15);
+            box-shadow: 0 0 15px rgba(255, 42, 116, 0.4);
+        }
+
+        /* Circular Image Wrapper */
+        .image-wrapper {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .gift-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gift-price {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--diamond-color);
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .popup-footer {
+            padding-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+
+        .send-btn {
+            background: var(--accent-gradient);
+            color: #fff;
+            border: none;
+            padding: 10px 30px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 24px;
+            cursor: pointer;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Video Container - STRICT FULL SCREEN */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 99999;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            overflow: hidden;
+        }
+
+        .video-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .gift-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover !important; 
+            transition: transform 0.8s ease-in-out, opacity 0.6s ease-out;
+            transform: translate(-50%, -50%) scale(1.05); 
+        }
+
+        .gift-video.shrink {
+            transform: translate(-50%, -50%) scale(0.1); 
+            opacity: 0;            
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay" onclick="closePopup()"></div>
+
+    <div class="popup-container" id="popup">
+        <div class="popup-header">
+            <div class="diamond-balance">
+                💎 <span id="diamondCount">1000</span> ডায়মন্ড
+            </div>
+            <button class="close-btn" onclick="closePopup()">✕</button>
+        </div>
+
+        <!-- Scrollable Gift Grid -->
+        <div class="gift-grid">
+            <div class="gift-card" onclick="selectGift(this, 100)">
+                <div class="image-wrapper">
+                    <img src="https://raw.githubusercontent.com/farjanaaktar1173-boop/Gift/1ec9b0e3ccf773b2467a804456f096385a2798d1/1791000761663.jpg" class="gift-img" alt="Gift Box">
+                </div>
+                <div class="gift-price">💎 100</div>
+            </div>
+            
+            <!-- ভবিষ্যতে নতুন গিফট যোগ করতে চাইলে নিচে শুধুমাত্র <div class="gift-card">...</div> কপি করে বসিয়ে দিলেই হবে -->
+        </div>
+
+        <div class="popup-footer">
+            <button class="send-btn" id="sendBtn" onclick="sendGift()">Send</button>
+        </div>
+    </div>
+
+    <!-- Video Container -->
+    <div class="video-container" id="videoContainer">
+        <video id="giftVideo" class="gift-video" playsinline preload="auto">
+            <source src="https://raw.githubusercontent.com/farjanaaktar1173-boop/Gift/main/VID_%E0%A7%A8%E0%A7%A6%E0%A7%A8%E0%A7%AC%E0%A7%A7%E0%A7%A6%E0%A7%A6%E0%A7%A9_%E0%A7%A6%E0%A7%AD%E0%A7%AB%E0%A7%AB%E0%A7%AB%E0%A7%AB.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <script>
+        let currentDiamonds = 1000;
+        let selectedPrice = 0;
+        let selectedElement = null;
+
+        const overlay = document.getElementById('overlay');
+        const popup = document.getElementById('popup');
+        const sendBtn = document.getElementById('sendBtn');
+        const diamondDisplay = document.getElementById('diamondCount');
+        const videoContainer = document.getElementById('videoContainer');
+        const giftVideo = document.getElementById('giftVideo');
+
+        // Auto open popup on page load
+        window.onload = function() {
+            setTimeout(() => {
+                openPopup();
+            }, 100);
+        };
+
+        function openPopup() {
+            overlay.classList.add('active');
+            popup.classList.add('active');
+        }
+
+        function closePopup() {
+            overlay.classList.remove('active');
+            popup.classList.remove('active');
+        }
+
+        function selectGift(element, price) {
+            document.querySelectorAll('.gift-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedPrice = price;
+            selectedElement = element;
+            sendBtn.classList.add('active');
+        }
+
+        function sendGift() {
+            if (selectedPrice === 0) return;
+
+            if (currentDiamonds < selectedPrice) {
+                alert("আপনার পর্যাপ্ত ডায়মন্ড নেই!");
+                return;
+            }
+
+            // Deduct diamonds
+            currentDiamonds -= selectedPrice;
+            diamondDisplay.innerText = currentDiamonds;
+
+            closePopup();
+            
+            // Play video after short delay
+            setTimeout(playAnimation, 300);
+        }
+
+        function playAnimation() {
+            videoContainer.classList.add('active');
+            giftVideo.classList.remove('shrink');
+            giftVideo.currentTime = 0;
+            
+            giftVideo.volume = 1.0;
+            
+            giftVideo.load();
+            let playPromise = giftVideo.play();
+
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Video playback failed: ", error);
+                });
+            }
+
+            const handleTimeUpdate = () => {
+                if (giftVideo.duration) {
+                    const timeLeft = giftVideo.duration - giftVideo.currentTime;
+                    if (timeLeft <= 1.0) {
+                        giftVideo.classList.add('shrink');
+                    }
+                }
+            };
+
+            giftVideo.addEventListener('timeupdate', handleTimeUpdate);
+
+            giftVideo.onended = () => {
+                videoContainer.classList.remove('active');
+                giftVideo.classList.remove('shrink');
+                giftVideo.removeEventListener('timeupdate', handleTimeUpdate);
+                
+                if(selectedElement) selectedElement.classList.remove('selected');
+                sendBtn.classList.remove('active');
+                selectedPrice = 0;
+            };
+        }
+    </script>
+</body>
+</html>
